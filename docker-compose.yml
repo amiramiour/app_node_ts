@@ -1,8 +1,11 @@
+version: '3.8'
 services:
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: docker/node/Dockerfile
     ports:
-      - "3031:3031"
+      - "3000:3000"
     environment:
       - NODE_ENV=development
       - DB_HOST=mongodb
@@ -10,7 +13,10 @@ services:
       - DB_NAME=f1_reaction_timer
     depends_on:
       - mongodb
+
   mongodb:
-    image: mongo:latest
+    build:
+      context: .
+      dockerfile: docker/mongoDB/Dockerfile
     ports:
       - "27017:27017"
