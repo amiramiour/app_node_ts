@@ -1,6 +1,6 @@
 // routes/auth.ts
 import express, { Request, Response } from 'express';
-import bcrypt from 'bcrypt';
+import argon2 from 'argon2';
 import jwt from 'jsonwebtoken';
 import User, { IUser } from '../models/User';
 
@@ -11,7 +11,7 @@ router.post('/register', async (req: Request, res: Response) => {
   const { username, password } = req.body;
 
   try {
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await argon2.hash(password, { type: argon2.argon2id });
     const newUser: IUser = new User({ username, password: hashedPassword });
     await newUser.save();
     res.status(201).json({ message: 'User registered successfully' });
@@ -30,7 +30,7 @@ router.post('/login', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Invalid username or password' });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await argon2.verify(user.password, password);
     if (!isMatch) {
       return res.status(400).json({ error: 'Invalid username or password' });
     }

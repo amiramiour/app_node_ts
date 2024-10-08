@@ -7,6 +7,7 @@ import authRoutes from './routes/auth';
 dotenv.config();
 
 const app = express();
+app.use(bodyParser.json());
 
 const connectDB = async () => {
   try {
@@ -24,23 +25,6 @@ app.get('/', (req, res) => {
   res.send('Hello World! MongoDB connected');
 });
 
-
-
 app.use('/api/auth', authRoutes);
-
-const PORT = process.env.PORT || 3000;
-const server = app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
-
-server.on('error', (err) => {
-  if (err.code === 'EADDRINUSE') {
-    console.error(`Port ${PORT} is already in use`);
-    process.exit(1);
-  } else {
-    console.error('Server error:', err);
-    process.exit(1);
-  }
-});
 
 export default app;
