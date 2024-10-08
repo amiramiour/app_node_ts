@@ -1,0 +1,16 @@
+services:
+  app:
+    build: .
+    ports:
+      - "3031:3031"
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=mongodb
+      - DB_PORT=27017
+      - DB_NAME=f1_reaction_timer
+    depends_on:
+      - mongodb
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
