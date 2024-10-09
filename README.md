@@ -115,7 +115,7 @@ Le projet utilise Docker pour simplifier le déploiement. Vous pouvez facilement
 ## **Contributeurs**
 
 - AMIOUR Amir Tahar 
-- REMENI Mohamed Lamine 
+- REMINI Mohamed Lamine 
 
 ### Remarques
 - Vérifiez également que le fichier `.env.sample` existe bien dans votre dossier `api` avec le contenu proposé.
