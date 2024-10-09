@@ -1,14 +1,17 @@
 import mongoose from 'mongoose';
+import request from 'supertest';
+import jwt from 'jsonwebtoken';
+import app from '../index'; // Adjust the path to your Express app
 import User, { IUser } from '../models/User';
 import argon2 from 'argon2';
 
 describe('User Model Test', () => {
+  let adminToken: string;
+  let userToken: string;
+
   // Connect to the in-memory database before running tests
   beforeAll(async () => {
-    await mongoose.connect('mongodb://localhost:27017/testdb', {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect('mongodb://localhost:27017/testdb');
   });
 
   // Clear the database after each test
@@ -25,7 +28,7 @@ describe('User Model Test', () => {
     const username = 'user';
     const email = 'testuser@example.com';
     const password = 'password123';
-    const role = '1';
+    const role = true;
 
     const hashedPassword = await argon2.hash(password, { type: argon2.argon2id });
     const newUser: IUser = new User({ username, email, password: hashedPassword, role });
@@ -44,7 +47,7 @@ describe('User Model Test', () => {
       username: 'user1',
       email: 'duplicate@example.com',
       password: await argon2.hash('password123', { type: argon2.argon2id }),
-      role: '1',
+      role: true,
     });
     await user1.save();
 
@@ -52,14 +55,14 @@ describe('User Model Test', () => {
       username: 'user2',
       email: 'duplicate@example.com',
       password: await argon2.hash('password456', { type: argon2.argon2id }),
-      role: '1',
+      role: true,
     });
 
-    let err;
+    let err: any;
     try {
       await user2.save();
     } catch (error) {
-      err = error;
+      err = error as any; // Cast error to any
     }
     expect(err).toBeDefined();
     expect(err.code).toBe(11000); // Duplicate key error code
@@ -69,7 +72,7 @@ describe('User Model Test', () => {
     const username = 'admin';
     const email = 'admin@example.com';
     const password = 'adminpassword';
-    const role = '0';
+    const role = false;
 
     const hashedPassword = await argon2.hash(password, { type: argon2.argon2id });
     const newAdmin: IUser = new User({ username, email, password: hashedPassword, role });
@@ -82,4 +85,6 @@ describe('User Model Test', () => {
     const isMatch = await argon2.verify(savedAdmin.password, password);
     expect(isMatch).toBe(true);
   });
+
+ 
 });
