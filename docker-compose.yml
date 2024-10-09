@@ -1,16 +1,13 @@
-version: '3.8'
 services:
   app:
     build:
       context: .
       dockerfile: docker/node/Dockerfile
-    volumes:
-      - ./api:/app  # Monte le répertoire local ./api dans le conteneur
-      - /app/node_modules  # Préserve node_modules du conteneur
     ports:
       - "3000:3000"
     env_file:
       - .env
+    
     environment:
       - NODE_ENV=development
       - DB_HOST=${DB_HOST}

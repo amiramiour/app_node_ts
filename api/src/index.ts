@@ -2,12 +2,16 @@ import express from 'express';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
+import cors from 'cors'; // Importer le middleware CORS
+
 import authRoutes from './routes/auth';
 import reactionTimeRoutes from './routes/reactionTime';
 
 dotenv.config();
 
 const app = express();
+app.use(cors());
+
 app.use(bodyParser.json());
 
 const connectDB = async () => {
