@@ -1,30 +1,20 @@
+// src/index.ts
 import express from 'express';
 import dotenv from 'dotenv';
-import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
 import cors from 'cors'; // Importer le middleware CORS
 
 import authRoutes from './routes/auth';
 import reactionTimeRoutes from './routes/reactionTime';
+import connectDB from './config/db'; // Importer la fonction de connexion à la DB
 
 dotenv.config();
 
 const app = express();
 app.use(cors());
-
 app.use(bodyParser.json());
 
-const connectDB = async () => {
-  try {
-    await mongoose.connect(`mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`);
-    console.log('MongoDB connected');
-  } catch (err) {
-    console.error('MongoDB connection error:', err);
-    process.exit(1);
-  }
-};
-
-connectDB();
+connectDB(); // Connexion à la base de données
 
 app.get('/', (req, res) => {
   res.send('Hello World! MongoDB connected');

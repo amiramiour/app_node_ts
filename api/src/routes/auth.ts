@@ -1,66 +1,21 @@
-// routes/auth.ts
 import express, { Request, Response } from 'express';
-import argon2 from 'argon2';
-import jwt from 'jsonwebtoken';
-import User, { IUser } from '../models/User';
+import { register, login, logout } from '../controllers/authController';
 import auth from '../middleware/auth';
 
 const router = express.Router();
 
 // Register route
-router.post('/register', async (req: Request, res: Response) => {
-  const { username, email, password, role } = req.body;
-
-  try {
-    const hashedPassword = await argon2.hash(password, { type: argon2.argon2id });
-    const newUser: IUser = new User({ username, email, password: hashedPassword, role });
-    await newUser.save();
-    res.status(201).json({ message: 'User registered successfully' });
-  } catch (err) {
-    res.status(500).json({ error: 'Error registering user' });
-  }
-});
-
-router.post('/logout', auth, (req: Request, res: Response) => {
-  // La déconnexion consiste à informer le client de supprimer le jeton.
-  // Parfois, on peut également gérer des listes noires de jetons invalidés côté serveur si nécessaire.
-  res.json({ message: 'Successfully logged out' });
-});
+router.post('/register', register);
 
 // Login route
-router.post('/login', async (req: Request, res: Response) => {
-  const { email, password } = req.body;
+router.post('/login', login);
 
-  try {
-    const user: IUser | null = await User.findOne({ email });
-    if (!user) {
-      return res.status(400).json({ error: 'Invalid email or password' });
-    }
-
-    const isMatch = await argon2.verify(user.password, password);
-    if (!isMatch) {
-      return res.status(400).json({ error: 'Invalid email or password' });
-    }
-
-    const token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET as string, { expiresIn: '1h' });
-    res.json({ token });
-  } catch (err) {
-    res.status(500).json({ error: 'Error logging in' });
-  }
-});
-router.post('/logout', auth, (req: Request, res: Response) => {
-  // La déconnexion consiste à informer le client de supprimer le jeton.
-  res.json({ message: 'Successfully logged out' });
-});
 // Logout route
-// Users route (protégée)
+router.post('/logout', auth, logout);
+
+// Users route (protected)
 router.get('/users', auth, async (req: Request, res: Response) => {
-  try {
-    const users = await User.find({}, 'username email role'); // Adjust fields as necessary
-    res.json(users);
-  } catch (err) {
-    res.status(500).json({ error: 'Server error' });
-  }
+  // Ajoutez ici la logique pour récupérer les utilisateurs, si nécessaire
 });
 
 export default router;
