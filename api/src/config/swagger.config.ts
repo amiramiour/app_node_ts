@@ -18,11 +18,11 @@ const options = {
     },
     servers: [
       {
-        url: "http://localhost:3001",
+        url: "http://localhost:3000",
       },
     ],
   },
-  apis: ["./src/docs/*.ts", "./src/controllers/*.ts"], // Add paths to your Swagger documentation files
+  apis: ["../docs/*.ts", "../controllers/*.ts"], // Add paths to your Swagger documentation files
 };
 
 const swaggerSpec = swaggerJsdoc(options);
