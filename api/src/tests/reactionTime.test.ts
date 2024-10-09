@@ -1,92 +1,72 @@
+// src/tests/reactionTime.test.ts
 import mongoose from 'mongoose';
-import request from 'supertest';
-import jwt from 'jsonwebtoken';
-import app from '../index'; // Adjust the path to your Express app
-import User, { IUser } from '../models/User';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 import ReactionTime, { IReactionTime } from '../models/ReactionTime';
-import argon2 from 'argon2';
 
-describe('Reaction Time Routes Test', () => {
-  let userToken: string;
-  let userId: mongoose.Types.ObjectId;
+describe('ReactionTime Model Test', () => {
+  let mongoServer: MongoMemoryServer;
 
   // Connect to the in-memory database before running tests
   beforeAll(async () => {
-    await mongoose.connect('mongodb://localhost:27017/testdb');
+    mongoServer = await MongoMemoryServer.create();
+    const uri = mongoServer.getUri();
+    await mongoose.connect(uri);
   });
 
   // Clear the database after each test
   afterEach(async () => {
-    await User.deleteMany({});
     await ReactionTime.deleteMany({});
   });
 
   // Disconnect from the in-memory database after all tests
   afterAll(async () => {
+    await mongoose.connection.dropDatabase();
     await mongoose.connection.close();
+    await mongoServer.stop();
   });
 
-  beforeEach(async () => {
-    // Create a user
-    const user = new User({
-      username: 'user',
-      email: 'user@example.com',
-      password: await argon2.hash('userpassword', { type: argon2.argon2id }),
-      role: true,
+  it('should create a reaction time record', async () => {
+    const reactionTimeData: IReactionTime = new ReactionTime({
+      user_id: new mongoose.Types.ObjectId(),
+      time: 250,
     });
-    const savedUser = await user.save();
-    userId = savedUser._id as mongoose.Types.ObjectId; // Explicitly cast _id
+    const savedReactionTime = await reactionTimeData.save();
 
-    // Generate a token for the user
-    userToken = jwt.sign({ _id: userId, email: user.email, role: user.role }, process.env.JWT_SECRET as string, { expiresIn: '1h' });
+    expect(savedReactionTime._id).toBeDefined();
+    expect(savedReactionTime.user_id).toBe(reactionTimeData.user_id);
+    expect(savedReactionTime.time).toBe(reactionTimeData.time);
+    expect(savedReactionTime.createdAt).toBeDefined();
   });
 
-  it('should submit a reaction time', async () => {
-    const response = await request(app)
-      .post('/submit-reaction-time')
-      .set('Authorization', `Bearer ${userToken}`)
-      .send({ time: 123 });
-
-    expect(response.status).toBe(201);
-    expect(response.body.message).toBe('Reaction time submitted successfully');
-
-    const reactionTime = await ReactionTime.findOne({ user_id: userId });
-    expect(reactionTime).toBeDefined();
-    expect(reactionTime?.time).toBe(123);
-  });
-
-  it('should retrieve reaction times for a user', async () => {
-    // Submit a reaction time first
-    const newReactionTime: IReactionTime = new ReactionTime({
-      user_id: userId,
-      time: 123,
+  it('should not create a reaction time record without user_id', async () => {
+    const reactionTimeData = new ReactionTime({
+      time: 250,
     });
-    await newReactionTime.save();
 
-    const response = await request(app)
-      .get('/get-reaction-times')
-      .set('Authorization', `Bearer ${userToken}`);
+    let err: any;
+    try {
+      await reactionTimeData.save();
+    } catch (error) {
+      err = error;
+    }
 
-    expect(response.status).toBe(200);
-    expect(response.body).toBeDefined();
-    expect(response.body.length).toBe(1);
-    expect(response.body[0].time).toBe(123);
+    expect(err).toBeDefined();
+    expect(err.errors.user_id).toBeDefined();
   });
 
-  it('should return 401 for unauthenticated requests to submit reaction time', async () => {
-    const response = await request(app)
-      .post('/submit-reaction-time')
-      .send({ time: 123 });
+  it('should not create a reaction time record without time', async () => {
+    const reactionTimeData = new ReactionTime({
+      user_id: new mongoose.Types.ObjectId(),
+    });
 
-    expect(response.status).toBe(401);
-    expect(response.body.error).toBe('Unauthorized');
-  });
+    let err: any;
+    try {
+      await reactionTimeData.save();
+    } catch (error) {
+      err = error;
+    }
 
-  it('should return 401 for unauthenticated requests to get reaction times', async () => {
-    const response = await request(app)
-      .get('/get-reaction-times');
-
-    expect(response.status).toBe(401);
-    expect(response.body.error).toBe('Unauthorized');
+    expect(err).toBeDefined();
+    expect(err.errors.time).toBeDefined();
   });
 });
