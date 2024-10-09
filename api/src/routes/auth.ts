@@ -21,6 +21,12 @@ router.post('/register', async (req: Request, res: Response) => {
   }
 });
 
+router.post('/logout', auth, (req: Request, res: Response) => {
+  // La déconnexion consiste à informer le client de supprimer le jeton.
+  // Parfois, on peut également gérer des listes noires de jetons invalidés côté serveur si nécessaire.
+  res.json({ message: 'Successfully logged out' });
+});
+
 // Login route
 router.post('/login', async (req: Request, res: Response) => {
   const { email, password } = req.body;
@@ -42,7 +48,11 @@ router.post('/login', async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Error logging in' });
   }
 });
-
+router.post('/logout', auth, (req: Request, res: Response) => {
+  // La déconnexion consiste à informer le client de supprimer le jeton.
+  res.json({ message: 'Successfully logged out' });
+});
+// Logout route
 // Users route (protégée)
 router.get('/users', auth, async (req: Request, res: Response) => {
   try {
