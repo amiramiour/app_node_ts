@@ -1,21 +1,20 @@
+# Utilise une image de base node
 FROM node:16
 
+# Définir le répertoire de travail dans le conteneur
 WORKDIR /app
 
-# Copy package.json and package-lock.json
+# Copier package.json et package-lock.json dans le conteneur
 COPY ./api/package*.json ./
 
-# Install dependencies
+# Installer les dépendances, y compris celles de développement
 RUN npm install
 
-# Copy the rest of the application code
+# Copier le reste du code de l'application dans le conteneur
 COPY ./api/ .
 
-# Build the TypeScript files
-RUN npm install
-
-# Expose the port the app runs on
+# Exposer le port sur lequel l'application tourne
 EXPOSE 3000
 
-# Command to run the application
-CMD ["npm", "start"]
+# Commande par défaut pour démarrer en mode développement
+CMD ["npm", "run", "dev"]
