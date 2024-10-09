@@ -115,5 +115,4 @@ Le projet utilise Docker pour simplifier le déploiement. Vous pouvez facilement
 - REMENI Mohammed Lamine 
 
 ### Remarques
-- Vous pouvez personnaliser la section "Contributeurs" avec les noms et rôles appropriés.
 - Vérifiez également que le fichier `.env.sample` existe bien dans votre dossier `api` avec le contenu proposé.
