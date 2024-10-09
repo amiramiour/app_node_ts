@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import User, { IUser } from '../models/User';
 import { Request, Response } from 'express';
 
+
 // Register handler
 export const register = async (req: Request, res: Response) => {
   const { username, email, password, role } = req.body;
@@ -16,6 +17,8 @@ export const register = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Error registering user' });
   }
 };
+
+
 
 // Login handler
 export const login = async (req: Request, res: Response) => {
@@ -38,6 +41,8 @@ export const login = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Error logging in' });
   }
 };
+
+
 
 // Logout handler
 export const logout = (req: Request, res: Response) => {

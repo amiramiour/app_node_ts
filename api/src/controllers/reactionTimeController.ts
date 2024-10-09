@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import ReactionTime from '../models/ReactionTime';
 
+
 export const submitReactionTime = async (req: Request, res: Response) => {
   try {
     if (!req.user) {
@@ -19,6 +20,7 @@ export const submitReactionTime = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Server error' });
   }
 };
+
 
 export const getReactionTimes = async (req: Request, res: Response) => {
   try {
