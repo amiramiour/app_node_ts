@@ -43,4 +43,14 @@ router.post('/login', async (req: Request, res: Response) => {
   }
 });
 
+// Users route (protégée)
+router.get('/users', auth, async (req: Request, res: Response) => {
+  try {
+    const users = await User.find({}, 'username email role'); // Adjust fields as necessary
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 export default router;
