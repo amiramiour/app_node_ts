@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
 import authRoutes from './routes/auth';
+import reactionTimeRoutes from './routes/reactionTime';
 
 dotenv.config();
 
@@ -26,5 +27,6 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api/reaction-time', reactionTimeRoutes);
 
 export default app;
