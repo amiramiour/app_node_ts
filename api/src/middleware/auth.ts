@@ -1,17 +1,32 @@
-// middleware/auth.ts
 import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
+import User, { IUser } from '../models/User';
 
-const auth = (req: Request, res: Response, next: NextFunction) => {
-  const token = req.header('Authorization')?.split(' ')[1];
-  if (!token) return res.status(401).json({ error: 'Access denied' });
+interface AuthenticatedRequest extends Request {
+  user?: IUser;
+}
+
+const auth = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  const token = req.header('Authorization')?.replace('Bearer ', '');
+
+  if (!token) {
+    return res.status(401).send({ error: 'Access denied. No token provided.' });
+  }
 
   try {
-    const verified = jwt.verify(token, process.env.JWT_SECRET as string);
-    req.user = verified;
+    const verified = jwt.verify(token, process.env.JWT_SECRET as string) as JwtPayload;
+    
+    // Cast verified object to IUser by fetching the user from DB
+    const user = await User.findById(verified._id) as IUser;
+
+    if (!user) {
+      return res.status(401).send({ error: 'User not found.' });
+    }
+
+    req.user = user;
     next();
   } catch (err) {
-    res.status(400).json({ error: 'Invalid token' });
+    res.status(400).send({ error: 'Invalid token.' });
   }
 };
 

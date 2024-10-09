@@ -3,8 +3,11 @@ services:
     build:
       context: .
       dockerfile: docker/node/Dockerfile
+    volumes:
+      - ./api:/app  # Monte le répertoire local ./api dans le conteneur
+      - /app/node_modules  # Préserve node_modules du conteneur
     ports:
-      - "3000:3000"
+      - "3001:3000"
     env_file:
       - .env
     
@@ -13,7 +16,7 @@ services:
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
       - DB_NAME=${DB_NAME}
-      - PORT=${PORT}
+      - PORT=3000
       - JWT_SECRET=${JWT_SECRET}
     depends_on:
       - mongodb
