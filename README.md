@@ -44,6 +44,9 @@ Avant de démarrer, assurez-vous d'avoir les éléments suivants installés sur 
 1. Installation des dépendances de test :  
    `npm install --save-dev jest ts-jest @types/jest mongodb-memory-server`
 
+3. pour lancer la doc:
+    `npm run serve-docs`
+
 ## **Installation et Configuration**
 
 ### **1. Backend (API)**
