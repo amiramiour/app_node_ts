@@ -12,8 +12,8 @@ const options = {
         url: "https://spdx.org/licenses/MIT.html",
       },
       contact: {
-        name: "Mohamed Lamine",
-        email: "mohamedlamineremini@gmail.com",
+        name: "Mohamed Lamine & Amiour Amir Tahar",
+        email: "mohamedlamineremini@gmail.com, amiouramirtahar@gmail.com",
       },
     },
     servers: [
